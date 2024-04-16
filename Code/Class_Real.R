@@ -20,6 +20,8 @@ library(parallel)
 
 setwd("Path")
 
+Dat.URL <- "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data"
+
 Dat.cancer <- read.csv(Dat.URL, header = FALSE, sep = ",", quote = "\"'")
 names(Dat.cancer) <- c('id_number', 'diagnosis', 'radius_mean', 
                        'texture_mean', 'perimeter_mean', 'area_mean', 
