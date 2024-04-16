@@ -1,0 +1,343 @@
+---
+title: "Visualization Plots for Simulation Study"
+author: "Chinedu Nzekwe"
+date: "2024-01-06"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading Packages and User data
+
+```{r}
+library(tidyverse)
+
+# New facet label names for Row
+data.labs <- c("Testing", "Training")
+names(data.labs) <- c("ts", "tr")
+
+# New facet label names for Column
+p.labs <- c("p = 25", "p = 100", "p = 500")
+names(p.labs) <- c("25", "100", "500")
+```
+
+# Model 5
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# New facet label names for Column
+p.labs5 <- c("p = 25", "p = 100", "p = 500", "p = 1000")
+names(p.labs5) <- c("25", "100", "500", "1000")
+
+Mod5P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod5_file/PredMod5P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod5P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod5_file/PredMod5P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod5P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod5_file/PredMod5P500n500_AVG_ALL.csv") %>% 
+  mutate(p=500)
+Mod5P1000n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod5_file/PredMod5P1000n500_AVG_ALL.csv") %>% 
+  mutate(p=1000)
+
+Mod5 <- bind_rows(Mod5P25n500, Mod5P100n500, Mod5P500n500, Mod5P1000n500)
+
+Mod5.tidy <- separate(Mod5,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod5plotNew.png", units="in", width=5, height=5, res=300)
+Mod5.tidy %>% 
+  filter(method != "HIER",) %>%
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>% 
+mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6)) +
+  labs(y="Value", x = "Method") 
+dev.off()
+```
+
+# Model 6
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+Mod6P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod6_file/PredMod6P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod6P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod6_file/PredMod6P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod6P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod6_file/PredMod6P500n500_AVG_ALL.csv") %>% 
+  mutate(p=500)
+Mod6P1000n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod6_file/PredMod6P1000n500_AVG_ALL.csv") %>% 
+  mutate(p=1000)
+
+Mod6 <- bind_rows(Mod6P25n500, Mod6P100n500, Mod6P500n500, Mod6P1000n500)
+
+Mod6.tidy <- separate(Mod6,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod6plot.png", units="in", width=5, height=5, res=300)
+Mod6.tidy %>% 
+  filter(method != "HIER") %>% 
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>%
+  mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6))+
+  labs(y="Value", x = "Method") 
+dev.off()
+```
+
+# Model 7
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+Mod7P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod7_file/PredMod7P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod7P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod7_file/PredMod7P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod7P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod7_file/PredMod7P500n500_AVG_ALL.csv") %>% 
+  mutate(p=500)
+Mod7P1000n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod7_file/PredMod7P1000n500_AVG_ALL.csv") %>% 
+  mutate(p=1000)
+
+Mod7 <- bind_rows(Mod7P25n500, Mod7P100n500, Mod7P500n500, Mod7P1000n500)
+
+Mod7.tidy <- separate(Mod7,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod7plot.png", units="in", width=5, height=5, res=300)
+Mod7.tidy %>% 
+  filter(method != "HIER") %>% 
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>%
+  mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6))+
+  labs(y="Value", x = "Method") 
+dev.off()
+```
+
+# Model 8
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+Mod8P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod8_file/PredMod8P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod8P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod8_file/PredMod8P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod8P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod8_file/PredMod8P500n500_AVG_ALL.csv") %>% 
+  mutate(p=500)
+
+Mod8 <- bind_rows(Mod8P25n500, Mod8P100n500, Mod8P500n500)
+
+Mod8.tidy <- separate(Mod8,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod8plot.png", units="in", width=5, height=5, res=300)
+Mod8.tidy %>% 
+  filter(method != "HIER") %>% 
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>%
+  mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6))+
+  labs(y="Value", x = "Method") 
+dev.off()
+```
+
+# Model 9
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+Mod9P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod9_file/PredMod9P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod9P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod9_file/PredMod9P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod9P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod9_file/PredMod9P500n500_AVG_ALL.csv") %>% 
+  mutate(p=500)
+Mod9P1000n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod9_file/PredMod9P1000n500_AVG_ALL.csv") %>% 
+  mutate(p=1000)
+
+Mod9 <- bind_rows(Mod9P25n500, Mod9P100n500, Mod9P500n500, Mod9P1000n500)
+
+Mod9.tidy <- separate(Mod9,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod9plot.png", units="in", width=5, height=5, res=300)
+Mod9.tidy %>% 
+  filter(method != "HIER") %>% 
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>%
+  mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6))+
+  labs(y="Value", x = "Method") 
+dev.off()
+```
+
+# Model 10
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+Mod10P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod10_file/PredMod10P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod10P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod10_file/PredMod10P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod10P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod10_file/PredMod10P500n500_AVG_ALL.csv") %>%
+  mutate(p=500)
+
+# Mod10 <- bind_rows(Mod10P25n500, Mod10P100n500)
+Mod10 <- bind_rows(Mod10P25n500, Mod10P100n500, Mod10P500n500)
+
+Mod10.tidy <- separate(Mod10,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod10plot.png", units="in", width=5, height=5, res=300)
+Mod10.tidy %>% 
+  filter(method != "HIER") %>% 
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>%
+  mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6))+
+  labs(y="Value", x = "Method") 
+dev.off()
+```
+
+# Model 11
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+Mod11P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod11_file/PredMod11P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod11P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod11_file/PredMod11P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod11P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod11_file/PredMod11P500n500_AVG_ALL.csv") %>% 
+  mutate(p=500)
+Mod11P1000n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod11_file/PredMod11P1000n500_AVG_ALL.csv") %>% 
+  mutate(p=1000)
+
+Mod11 <- bind_rows(Mod11P25n500, Mod11P100n500, Mod11P500n500, Mod11P1000n500)
+
+Mod11.tidy <- separate(Mod11,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod11plot.png", units="in", width=5, height=5, res=300)
+Mod11.tidy %>% 
+  filter(method != "HIER") %>% 
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>%
+  mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6))+
+  labs(y="Value", x = "Method") 
+dev.off()
+```
+
+# Model 12
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+Mod12P25n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod12_file/PredMod12P25n500_AVG_ALL.csv") %>% 
+  mutate(p=25)
+Mod12P100n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod12_file/PredMod12P100n500_AVG_ALL.csv") %>% 
+  mutate(p=100)
+Mod12P500n500 <- read_csv("~/Semesters/FALL2023/Diss-Res/Paper1/Code/plotDatasets/mod12_file/PredMod12P500n500_AVG_ALL.csv") %>% 
+  mutate(p=500)
+
+Mod12 <- bind_rows(Mod12P25n500, Mod12P100n500, Mod12P500n500)
+
+Mod12.tidy <- separate(Mod12,
+               col = Model,
+               sep = "\\.",
+               into = c("method", "metric", "data"))
+
+png("Mod12plot.png", units="in", width=5, height=6, res=300)
+Mod12.tidy %>% 
+  filter(method != "HIER") %>% 
+  filter(metric %in% c("Acc", "BalAcc", "F1", "SENS", "SPEC")) %>%
+  mutate(method = recode(method, "LASSO" = "LASSO", "SCAD" = "SCAD", "MCP" = "MCP", "LASSO.W" = "RLW", "LASSO.S" = "RLS", "SCAD.W" = "RSW", "SCAD.S" = "RSS", "MCP.W" = "RMCPW", "MCP.S" = "RMCPS", "RF" = "RF", "iRF" = "iRF")) %>% 
+  mutate(method = factor(method, levels = c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RSW", "RSS", "RMCPW", "RMCPS", "RF", "iRF"))) %>%
+  filter(method %in% c("LASSO", "SCAD", "MCP", "RLW", "RLS", "RF", "iRF")) %>% 
+  ggplot(aes(x = method, y = mean, color = metric, group = metric)) +
+  geom_line(aes(linetype = metric), show.legend = F) + 
+  geom_point(aes(shape = metric), show.legend = T) +
+  scale_shape_manual(values = c(0:11)) +
+  scale_size_manual(values = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6), legend.position = "top") +
+  scale_x_discrete(labels = c("LASSO", "SCAD", "MCP", "RAMP-W", "RAMP-S", "RF", "iRF")) +
+  facet_grid(data~p, labeller = labeller(p = p.labs5, data = data.labs)) +
+  theme(axis.text.x = element_text(angle = 90, size = 6))+
+  labs(y="Value", x = "Method") 
+dev.off()
+```
