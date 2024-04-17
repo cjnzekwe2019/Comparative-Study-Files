@@ -50,11 +50,11 @@ To run this script, you need to install the following R packages:
 2. Prediction Metrics (mse.fun): A function for calculating the Mean Squared Error (MSE) between predicted and actual values.
 
 3. Interaction Selection Algorithms:
-    - LASSO (`LASSO.func`)
-    - Non-Convex Penalty (`NCP.func`)
-    - RAMP Algorithm (`RAMP.func`)
-    - Random Forest (`RF.func`)
-    - Iterative Random Forest (`iRF.func`)
+    - LASSO (`LASSO.func`) which internally uses the `glmnet` package
+    - Non-Convex Penalty (`NCP.func`) which internally uses the `ncvreg` package
+    - RAMP Algorithm (`RAMP.func`) which internally uses the `RAMP` package
+    - Random Forest (`RF.func`) which internally uses the `randomForest` package
+    - Iterative Random Forest (`iRF.func`) which internally uses the version 2.0.0 of `iRF` package.
 
 4. Simulation Control (`sim.func`): Orchestrates the simulation process, calling data generation, model fitting, and evaluation functions. It iterates through various models and parameters to assess performance.
 
