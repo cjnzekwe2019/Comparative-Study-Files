@@ -9,7 +9,7 @@ This Repository contains files for comparative study of statistical and tre-base
 
 This script conducts a comprehensive simulation and evaluation of various statistical models for interaction selection and prediction in R. It leverages a broad array of packages for data manipulation, statistical modeling, and parallel computing. The primary aim is to compare the performance of different modeling techniques on simulated datasets, which mimic complex real-world data scenarios.
 
-# Dependencies
+# Dependencies in order to reproduce the research analysis (packages)
 
 To run this script, you need to install the following R packages:
 
